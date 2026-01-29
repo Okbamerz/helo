@@ -13,6 +13,7 @@
     <link rel='stylesheet' type='text/css' media='all' href="assets/css/shards.min.css" />
     <link rel='stylesheet' type='text/css' media='all' href="assets/css/shards-extras.min.css" />
     <link rel='stylesheet' type='text/css' media='all' href="assets/css/style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body>
@@ -217,7 +218,66 @@
                 $("#nav-titre").html(level+" Calculateur de Moyenne");
     </script>
     <script type='text/javascript' src='canevas/js/majq_Model.js'></script>
+<script>
+    (function() {
+        var STORAGE_KEY = 'helo_calc_save_';
 
+        // This function generates a unique ID for every input based on where it sits in the table
+        // Example ID: "sem1_row3_col2"
+        function identifyAndRestoreInputs() {
+            var inputs = document.querySelectorAll('input, select');
+            
+            inputs.forEach(function(input) {
+                // If input has no ID, make one based on its position
+                if (!input.id) {
+                    var row = input.closest('tr');
+                    var table = input.closest('table');
+                    if (row && table) {
+                        var rowIndex = Array.from(table.rows).indexOf(row);
+                        var tableId = table.id || 'unknown_table';
+                        // We use the input's name or placeholder or type to distinguish multiple inputs in one row
+                        var uniqueSuffix = input.name || input.placeholder || input.type; 
+                        input.id = tableId + '_r' + rowIndex + '_' + uniqueSuffix.replace(/\s/g, '');
+                    }
+                }
+
+                // Now that it has an ID, try to load its value
+                if (input.id) {
+                    var saved = localStorage.getItem(STORAGE_KEY + input.id);
+                    if (saved !== null && saved !== "") {
+                        input.value = saved;
+                        // Force the calculator to recalculate with the new value
+                        $(input).trigger('change');
+                        $(input).trigger('keyup');
+                    }
+                }
+            });
+        }
+
+        // 1. Listen for "input" events globally (Event Delegation)
+        // This works even for inputs created later
+        document.body.addEventListener('input', function(e) {
+            var target = e.target;
+            if (target.tagName === 'INPUT' || target.tagName === 'SELECT') {
+                if (target.id) {
+                    localStorage.setItem(STORAGE_KEY + target.id, target.value);
+                }
+            }
+        });
+
+        // 2. Watch for the calculator to appear (MutationObserver)
+        // This detects when your other script adds the rows to the table
+        var observer = new MutationObserver(function(mutations) {
+            // Every time the page changes, try to find and restore inputs
+            identifyAndRestoreInputs();
+        });
+
+        // Start watching the body for changes
+        observer.observe(document.body, { childList: true, subtree: true });
+
+    })();
+</script>
+</script>
 </body>
 
 </html>

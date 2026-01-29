@@ -346,10 +346,36 @@ function main() {
 }
 
 
+// --- Auto-Save Feature ---
 
+// 1. When the page loads, fill the inputs with saved values
+$(document).ready(function() {
+    $('input, select, textarea').each(function() {
+        var inputId = $(this).attr('id');
+        // Only restore if the input has an ID
+        if (inputId) {
+            var savedValue = localStorage.getItem('calc_' + inputId);
+            if (savedValue) {
+                $(this).val(savedValue);
+                // Optional: Trigger change event so any calculations run immediately
+                $(this).trigger('change'); 
+            }
+        }
+    });
+
+    // 2. When the user types, save the value immediately
+    $('input, select, textarea').on('input change', function() {
+        var inputId = $(this).attr('id');
+        var value = $(this).val();
+        if (inputId) {
+            localStorage.setItem('calc_' + inputId, value);
+        }
+    });
+});
 
 
 $(document).click(main);
 $(document).keypress(function(e) {
     if (e.keyCode == 13) { main() }
 });
+

@@ -10340,5 +10340,25 @@ a.text-dark:focus {
     }
 }
 
+@media screen and (max-width: 768px) {
 
+    .container, .wrapper { 
+        width: 100% !important; 
+        padding: 10px;
+    }
+    
+   
+    input, select, button {
+        font-size: 16px !important; /* Prevents zooming on iPhone */
+        padding: 10px;
+        min-height: 44px; /* Standard touch target size */
+        width: 100%;      /* Make inputs full width on small screens */
+        box-sizing: border-box;
+    }
+
+   
+    body {
+        font-size: 14px;
+    }
+}
 /*# sourceMappingURL=bootstrap.css.map */
